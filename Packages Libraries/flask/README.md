@@ -12,10 +12,10 @@ HTTP request -> Flask route -> validate JSON -> SQLAlchemy session -> SQLite
 
 | Component | Responsibility |
 | --- | --- |
-| `main.py` | Creates the Flask app, configures the database engine and session factory, defines the ORM model and API routes, and starts the development server. |
+| `main.py` | Creates the Flask app, configures the database engine and session factory, defines the ORM model and API routes, and contains the `start_app()` server entry point. |
 | `create_app()` | Application factory. It accepts an optional SQLAlchemy database URL, which allows tests to use a temporary database. |
 | `Product` | SQLAlchemy ORM model mapped to the `products` table. Its columns are `id`, `name`, `description`, and `price`. |
-| Engine | `create_engine()` opens the connection to SQLite. By default, the database file is `flask/products.db`. |
+| Engine | `create_engine()` opens the connection to SQLite. By default, the database file is `Packages Libraries/flask/products.db`. |
 | Session | `sessionmaker()` creates sessions. A session loads ORM objects, adds or deletes rows, and persists changes with `commit()`. |
 | `validate_product_data()` | Checks the JSON shape and required product fields before they are written to the database. |
 | `serialize_product()` | Converts a `Product` object to JSON-ready values. The decimal price is returned as a string to preserve its decimal representation. |
@@ -26,11 +26,11 @@ The app uses SQLAlchemy directly; it does not use Flask-SQLAlchemy. `Base.metada
 
 ## Run the app
 
-From the repository root, install the pinned project dependencies if needed, then start Flask:
+From the repository root, install the pinned project dependencies if needed, then run `main.py`. Its `start_app()` function starts Flask's local development server:
 
 ```powershell
 python -m pip install -r requirements.txt
-Set-Location flask
+Set-Location "Packages Libraries/flask"
 python main.py
 ```
 
@@ -94,7 +94,7 @@ The API opens a session for each request and closes it when the request handler 
 From the repository root:
 
 ```powershell
-python -m unittest discover -s flask -p "test_*.py" -v
+python -m unittest discover -s "Packages Libraries/flask" -p "test_*.py" -v
 ```
 
 The tests create a temporary SQLite database and dispose of its engine when finished. The normal app database is left untouched.

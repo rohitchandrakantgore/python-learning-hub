@@ -11,6 +11,7 @@ class Base(DeclarativeBase):
 
 
 class Product(Base):
+    # This class describes the products table and its columns.
     __tablename__ = 'products'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -29,6 +30,7 @@ def serialize_product(product):
 
 
 def validate_product_data(data):
+    # Validate incoming JSON before using it to create or update a product.
     if not isinstance(data, dict):
         return None, 'Request body must be a JSON object.'
 
@@ -57,10 +59,16 @@ def validate_product_data(data):
 
 def create_app(database_url=None):
     app = Flask(__name__)
+
+    # SQLAlchemy uses this URL to open the SQLite database file.
     database_url = database_url or f"sqlite:///{Path(__file__).with_name('products.db').as_posix()}"
     connect_args = {'check_same_thread': False} if database_url.startswith('sqlite:') else {}
     engine = create_engine(database_url, connect_args=connect_args)
+
+    # Make the table if it does not exist yet.
     Base.metadata.create_all(engine)
+
+    # Create a database session for each request that needs to read or change data.
     Session = sessionmaker(bind=engine, expire_on_commit=False)
     app.extensions['sqlalchemy_engine'] = engine
 
@@ -128,5 +136,10 @@ def create_app(database_url=None):
 app = create_app()
 
 
-if __name__ == '__main__':
+def start_app():
+    # This is the one place that starts the local development server.
     app.run(debug=True)
+
+
+if __name__ == '__main__':
+    start_app()
